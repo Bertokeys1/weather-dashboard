@@ -1,5 +1,3 @@
-var 
-
 // Print/render the weather data to the page.
 
 // From the <form> element, listen to the "submit"
@@ -25,17 +23,22 @@ function cityName() {
 function geoData(cityName) {
 
     //build url
-    var url = `api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=5f0de267b85fd710a6d2a256aad58f56`;
+    var APIKey = "5f0de267b85fd710a6d2a256aad58f56";
+    var weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${APIKey}`;
+    // var url = `api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=5f0de267b85fd710a6d2a256aad58f56`;
 
-    fetch( url )
+    fetch( weatherUrl )
         .then(function(response) {
             return response.json();
         })
         .then(function(data) {
 
-            console.log( data );
+            var lat = data.city.coord.lat;
+            var lon = data.city.coord.lon;
 
-            oneCall( data[0].lat, data[0].lon);
+            // console.log(lat, lon);
+
+            oneCall( lat, lon)
 
         });
 
@@ -50,7 +53,7 @@ function geoData(cityName) {
 // Fetch the one call weather data
 function oneCall(lat,lon) {
 
-    var url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid={API key}`;
+    var url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid=5f0de267b85fd710a6d2a256aad58f56`;
 
     fetch( url )
         .then(function(response) {
@@ -58,12 +61,22 @@ function oneCall(lat,lon) {
         })
         .then(function(data) {
 
-            console.log( data );
+            // console.log( data );
 
             // Render to page.
-
+            fiveDay(data);
         });
+    
+}
 
+    function fiveDay(data) {
+        console.log(data.daily);
+        for (let i = 0; i < 4; i++) {
+            const element = data.daily[i].temp.day;
+            console.log(element);
+        }
+        
+    }
 
     // lat
     
@@ -75,7 +88,6 @@ function oneCall(lat,lon) {
 
     // exclude = minutely, hourly
 
-}
 
 
 // Print/render the weather data to the page.
