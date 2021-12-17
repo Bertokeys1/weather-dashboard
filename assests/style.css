@@ -8,3 +8,9 @@ header {
     align-items: center;
 }
 
+.weather {
+    height: 20rem;
+    background-color: rgb(35, 54, 100);
+    color: white;
+    font-size: small;
+}
