@@ -10,11 +10,25 @@
     // Get the vity from the button's data attribute
 
 
-
+var currentWeather = $("#currentWeather")
 var searchBtn = $("#search-btn")
+var fiveDayEl = $("#fiveDay")
+var cityList = [];
+var historyEl = $("#history")
+if (localStorage.getItem("cityList")) {
+    cityList = JSON.parse(localStorage.getItem("cityList"))
+}
 
 searchBtn.on("click", cityName);
 
+function displayCity() {
+    historyEl.empty()
+    for (let i = 0; i < cityList.length; i++) {
+        historyEl.append(`<p>${cityList[i]}</p>`)
+        
+    }
+}
+displayCity()
 function cityName() {
     var location = $("#search").val();
     geoData(location);
@@ -39,7 +53,7 @@ function geoData(cityName) {
 
             // console.log(lat, lon);
 
-            oneCall( lat, lon)
+            oneCall( lat, lon, data)
 
         });
 
@@ -52,34 +66,42 @@ function geoData(cityName) {
     // appid = Your custome API key
 
 // Fetch the one call weather data
-function oneCall(lat,lon) {
+function oneCall(lat,lon, currentData) {
 
-    var url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=5f0de267b85fd710a6d2a256aad58f56`;
+    var url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=5f0de267b85fd710a6d2a256aad58f56&units=imperial`;
 
     fetch( url )
         .then(function(response) {
             return response.json();
         })
         .then(function(data) {
-
-            // console.log( data );
+            console.log(currentData)
+            console.log( data );
+            currentWeather.html(`            <div class="city">city: ${currentData.city.name} ${moment(data.current.dt,"X").format("MM/DD/YYYY")} <img src="http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png"></div>
+            <div class="topTemp">temp: ${data.current.temp}</div>
+            <div class="topwind">wind speed: ${data.current.wind_speed}</div>
+            <div class="tophum">Humidity:${data.current.humidity}</div>
+            <div class="uv">UV:${data.current.uvi}</div>`)
             
-
+            cityList.push(currentData.city.name)
+            localStorage.setItem("cityList", JSON.stringify(cityList))
+            displayCity()
             // Render to page.
             fiveDay(data);
         });
     
 }
 
-const cardTemp = document.getElementById(".temp");
-const cardWind = document.getElementById(".wind");
-const cardHum = document.getElementById(".hum");
-const cardIcon = document.getElementById(".icon");
-const cardDate = document.getElementById(".date");
+const cardTemp = document.getElementById("temp");
+const cardWind = document.getElementById("wind");
+const cardHum = document.getElementById("hum");
+const cardIcon = document.getElementById("icon");
+const cardDate = document.getElementById("date");
 
     function fiveDay(data) {
         console.log(data.daily);
-        for (let i = 0; i < 4; i++) {
+        fiveDayEl.empty()
+        for (let i = 1; i < 6; i++) {
             const temp = data.daily[i].temp.day;
             const wind = data.daily[i].wind_speed;
             const hum = data.daily[i].humidity;
@@ -89,11 +111,18 @@ const cardDate = document.getElementById(".date");
             var fer = kelvinConvert(temp);
             console.log(fer)
             // append to html
-            cardTemp.appendChild(temp);
-            cardWind.textContent = wind;
-            cardHum.textContent = hum;
-            cardIcon.textContent = icon;
-            cardDate.textContent = date;
+            fiveDayEl.append(`
+            <div class="weather card col-md m-2">
+            <div class="card-body">
+              <div class="date">Date: ${moment(data.daily[i].dt,"X").format("MM/DD/YYYY")}</div>
+              <div class="icon"><img src="http://openweathermap.org/img/wn/${icon}@2x.png"></div>
+              <div class="temp">Temperature: ${temp}</div>
+              <div class="wind">Wind: ${wind}</div>
+              <div class="hum">Humidity: ${hum}</div>
+            </div>
+          </div>
+            
+            `)
 
         }
         
