@@ -24,9 +24,12 @@ searchBtn.on("click", cityName);
 function displayCity() {
     historyEl.empty()
     for (let i = 0; i < cityList.length; i++) {
-        historyEl.append(`<p>${cityList[i]}</p>`)
+        historyEl.append(`<li><button class="cityButton">${cityList[i]}</button></li>`)
         
     }
+    $(".cityButton").on("click", function(){
+        geoData($(this).text())
+    })
 }
 displayCity()
 function cityName() {
@@ -49,7 +52,7 @@ function geoData(cityName) {
         .then(function(data) {
 
             var lat = data.city.coord.lat;
-            var lon = data.city.coord.lon;
+            var lon = data.city.coord.lon; 
 
             // console.log(lat, lon);
 
@@ -83,8 +86,10 @@ function oneCall(lat,lon, currentData) {
             <div class="tophum">Humidity:${data.current.humidity}</div>
             <div class="uv">UV:${data.current.uvi}</div>`)
             
-            cityList.push(currentData.city.name)
-            localStorage.setItem("cityList", JSON.stringify(cityList))
+            if(cityList.indexOf(currentData.city.name) === -1) {
+                cityList.push(currentData.city.name)
+                localStorage.setItem("cityList", JSON.stringify(cityList))
+            }
             displayCity()
             // Render to page.
             fiveDay(data);

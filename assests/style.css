@@ -14,3 +14,7 @@ header {
     color: white;
     font-size: small;
 }
+
+ul {
+    list-style-type: none;
+}
