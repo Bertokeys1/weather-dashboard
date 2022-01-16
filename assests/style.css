@@ -8,6 +8,7 @@ header {
     align-items: center;
 }
 
+/* style for 5 day cards */
 .weather {
     height: 20rem;
     background-color: rgb(44, 106, 250);
